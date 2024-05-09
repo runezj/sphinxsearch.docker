@@ -2,8 +2,8 @@
 #
 # @version 	latest (2.2.9)
 # @author 	leodido <leodidonato@gmail.com> (@leodido)
-FROM debian:wheezy
-MAINTAINER Leonardo Di Donato <leodidonato@gmail.com> @leodido
+FROM debian:bookworm
+#MAINTAINER Leonardo Di Donato <leodidonato@gmail.com> @leodido
 # runtime dependencies
 RUN apt-get update && apt-get install -y unixodbc-dev libexpat-dev
 # place sphinxsearch installation in place
