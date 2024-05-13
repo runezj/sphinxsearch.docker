@@ -9,6 +9,7 @@ RUN apt-get update && apt-get install -y unixodbc-dev libexpat-dev
 # place sphinxsearch installation in place
 ADD /sphinxsearch.tar.gz /usr/local/
 ADD dicts /var/diz/sphinx
+ADD sphinx_conf_updater.sh /
 # expose ports
 EXPOSE 9312 9306
 # expose directories
