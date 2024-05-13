@@ -1,4 +1,4 @@
-export RELEASE="2.2.9"
+export RELEASE="2.2.11"
 export TYPE="release"
 export BUILD_OPTIONS="-r ${RELEASE}-${TYPE}"
 export TAGS="leodido/sphinxsearch:${RELEASE} leodido/sphinxsearch:latest"

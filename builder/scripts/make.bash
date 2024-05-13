@@ -3,7 +3,7 @@
 # Build script
 # @author   leodido   <leodidonato@gmail.com>
 
-declare SPHINXSEARCH_BASE_URL=${SPHINXSEARCH_BASE_URL:-http://sphinxsearch.com/files/sphinx}
+declare SPHINXSEARCH_BASE_URL=${SPHINXSEARCH_BASE_URL:-https://sphinxsearch.com/files/sphinx}
 declare RE2_BASE_URL=${RE2_BASE_URL:-https://github.com/google/re2/archive}
 declare LIBSTEMMER_URL=${LIBSTEMMER_URL:-http://snowball.tartarus.org/dist/libstemmer_c.tgz}
 declare POSTGRESQL_VERSION=${POSTGRESQL_VERSION:-9.4.4}
@@ -37,15 +37,17 @@ build() {
   local tmp="$(mktemp -d "${TMPDIR:-/var/tmp}/sphinxsearch-${version}-XXXXX")"
 
   # download postegresql source
-  curl -sSL "${POSTGRESQL_URL}" | tar xz -C ${tmp} | output_redirect
+#  curl -sSL "${POSTGRESQL_URL}" | tar xz -C ${tmp} | output_redirect
   # postegresql installation
-  (cd ${tmp}/postgresql-${POSTGRESQL_VERSION}; ./configure --prefix=${prefix}/pgsql;  make -j; make install) | output_redirect
+#  (cd ${tmp}/postgresql-${POSTGRESQL_VERSION}; ./configure --prefix=${prefix}/pgsql;  make -j; make install) | output_redirect
 
   # download sphinxsearch source
   curl -sSL "${SPHINXSEARCH_BASE_URL}-${version}.tar.gz" | tar xz -C ${tmp} | output_redirect
   # download latest google re2 and place it
   local re2_tags=$(curl -k -sSL https://api.github.com/repos/google/re2/tags)
   local re2_latest_tag=$(echo "${re2_tags}" | grep "name" | head -n 1 | cut -d '"' -f 4)
+  # Actually no, override with older version. Sphinx 2 is old.
+  re2_latest_tag="2017-07-01"
   curl -k -sSL "${RE2_BASE_URL}/${re2_latest_tag}".tar.gz | tar xz -C ${tmp} | output_redirect
   mv ${tmp}/re2-${re2_latest_tag}/* ${tmp}/sphinx-${version}/libre2/
   # download latest libstemmer and place it
@@ -60,15 +62,14 @@ build() {
               --with-static-mysql \
               --with-mysql-includes=$(mysql_config --variable=pkgincludedir) \
               --with-mysql-libs=$(mysql_config --variable=pkglibdir) \
-              --with-static-pgsql \
-              --with-pgsql-includes=${prefix}/pgsql/include \
-              --with-pgsql-libs=${prefix}/pgsql/lib \
               --with-libstemmer \
               --with-re2 \
               --with-iconv \
               --with-libexpat \
               --with-unixodbc) | output_redirect
   # sphinxsearch installation
+  # -lssl and -lcrypto are required now
+  sed -i -e 's/LIBS\ =\ -lodbc\ -lexpat\ -lm\ -lz\ \ -L\/usr\/local\/lib\ -lrt\ \ -lpthread/LIBS\ =\ -lodbc\ -lexpat\ -lm\ -lz\ -L\/usr\/local\/lib\ -lrt\ -lpthread\ -lssl\ -lcrypto/' ${tmp}/sphinx-${version}/src/Makefile
   (cd ${tmp}/sphinx-${version} && make -j install) | output_redirect
 
   # insert shortcut scripts

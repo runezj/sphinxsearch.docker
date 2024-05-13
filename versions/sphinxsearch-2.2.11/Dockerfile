@@ -1,8 +1,8 @@
 # Sphinxsearch
 #
-# @version 	latest (2.2.9)
+# @version 	latest (2.2.11)
 # @author 	leodido <leodidonato@gmail.com> (@leodido)
-FROM debian:bookworm
+FROM debian:bookworm-slim
 #MAINTAINER Leonardo Di Donato <leodidonato@gmail.com> @leodido
 # runtime dependencies
 RUN apt-get update && apt-get install -y unixodbc-dev libexpat-dev
